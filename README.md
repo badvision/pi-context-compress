@@ -26,31 +26,55 @@ A seventh pass, **F — minify** (trailing whitespace, blank-run collapse, JSON 
 
 ## Installation
 
-1. Copy this folder into Pi's extensions directory:
+The extension uses the standard Pi "package with dependencies" layout — a directory with a `package.json` declaring the entry point — so it installs the same way on upstream Pi and on prime-agent (a Pi fork). Only the extensions directory differs.
+
+### Pi (upstream)
+
+1. Copy this folder into the global extensions directory:
+
+   ```sh
+   mkdir -p ~/.pi/agent/extensions
+   cp -R <this-folder> ~/.pi/agent/extensions/context-compress
+   ```
+
+2. Install dependencies (the Pi package is a runtime dependency for types; vitest/tsx/typescript for dev):
+
+   ```sh
+   cd ~/.pi/agent/extensions/context-compress
+   npm install
+   ```
+
+3. No registration step is needed: Pi auto-discovers package-style extension directories (a `package.json` with a `pi.extensions` entry, per the [Pi extensions documentation](https://pi.dev/docs/latest/extensions)) and resolves the entry point from:
+
+   ```json
+   "pi": { "extensions": [ "./src/index.ts" ] }
+   ```
+
+   That doc page also covers project-local placement (`.pi/extensions/`), extra paths via `settings.json`, and npm/git distribution as pi packages. For a quick test without installing: `pi -e ./src/index.ts`. Auto-discovered extensions can be hot-reloaded with `/reload`.
+
+### prime-agent (Pi fork)
+
+1. Copy this folder into prime-agent's extensions directory:
 
    ```sh
    mkdir -p ~/.prime/agent/extensions
    cp -R <this-folder> ~/.prime/agent/extensions/context-compress
    ```
 
-2. Install dependencies (the Pi package is a runtime dependency for types; vitest/tsx/typescript for dev):
+2. Install dependencies:
 
    ```sh
    cd ~/.prime/agent/extensions/context-compress
    npm install
    ```
 
-3. No registration step is needed: the Pi extension loader discovers `~/.prime/agent/extensions/<dir>/` and resolves the entry point from `package.json`:
-
-   ```json
-   "pi": { "extensions": [ "./src/index.ts" ] }
-   ```
+3. No registration step is needed: prime-agent's extension loader discovers `~/.prime/agent/extensions/<dir>/` and resolves the entry point from the same `package.json` `pi.extensions` key.
 
 4. Restart the agent.
 
 ### Uninstall
 
-Delete the folder and restart the agent. Nothing else is touched.
+Delete the extension folder (then restart, or `/reload` in upstream Pi). Nothing else is touched.
 
 ## Configuration
 
